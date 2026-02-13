@@ -102,4 +102,100 @@ func TestVaultPath(t *testing.T) {
 		// Assert
 		assert.Equal(t, err.Error(), obsidian.ObsidianConfigVaultNotFoundError)
 	})
+
+	t.Run("Converts windows C: path to WSL path when running in WSL", func(t *testing.T) {
+		// Arrange
+		originalRunningInWSL := obsidian.RunningInWSL
+		obsidian.RunningInWSL = func() bool { return true }
+		defer func() { obsidian.RunningInWSL = originalRunningInWSL }()
+
+		obsidian.ObsidianConfigFile = func() (string, error) {
+			return mockObsidianConfigFile, nil
+		}
+
+		configContent := `{
+			"vaults": {
+				"windows": {
+					"path": "C:\\Users\\user\\Documents\\Obsidian Vault"
+				}
+			}
+		}`
+		err := os.WriteFile(mockObsidianConfigFile, []byte(configContent), 0644)
+		if err != nil {
+			t.Fatalf("Failed to create obsidian.json file: %v", err)
+		}
+
+		vault := obsidian.Vault{Name: "windows"}
+
+		// Act
+		vaultPath, err := vault.Path()
+
+		// Assert
+		assert.NoError(t, err)
+		assert.Equal(t, "/mnt/c/Users/user/Documents/Obsidian Vault", vaultPath)
+	})
+
+	t.Run("Converts windows D: path to WSL path when running in WSL", func(t *testing.T) {
+		// Arrange
+		originalRunningInWSL := obsidian.RunningInWSL
+		obsidian.RunningInWSL = func() bool { return true }
+		defer func() { obsidian.RunningInWSL = originalRunningInWSL }()
+
+		obsidian.ObsidianConfigFile = func() (string, error) {
+			return mockObsidianConfigFile, nil
+		}
+
+		configContent := `{
+			"vaults": {
+				"secondary": {
+					"path": "D:\\Data\\Vaults\\MyVault"
+				}
+			}
+		}`
+		err := os.WriteFile(mockObsidianConfigFile, []byte(configContent), 0644)
+		if err != nil {
+			t.Fatalf("Failed to create obsidian.json file: %v", err)
+		}
+
+		vault := obsidian.Vault{Name: "secondary"}
+
+		// Act
+		vaultPath, err := vault.Path()
+
+		// Assert
+		assert.NoError(t, err)
+		assert.Equal(t, "/mnt/d/Data/Vaults/MyVault", vaultPath)
+	})
+
+	t.Run("Does not modify linux-native path when running in WSL", func(t *testing.T) {
+		// Arrange
+		originalRunningInWSL := obsidian.RunningInWSL
+		obsidian.RunningInWSL = func() bool { return true }
+		defer func() { obsidian.RunningInWSL = originalRunningInWSL }()
+
+		obsidian.ObsidianConfigFile = func() (string, error) {
+			return mockObsidianConfigFile, nil
+		}
+
+		configContent := `{
+			"vaults": {
+				"linux": {
+					"path": "/home/user/Documents/Obsidian Vault"
+				}
+			}
+		}`
+		err := os.WriteFile(mockObsidianConfigFile, []byte(configContent), 0644)
+		if err != nil {
+			t.Fatalf("Failed to create obsidian.json file: %v", err)
+		}
+
+		vault := obsidian.Vault{Name: "linux"}
+
+		// Act
+		vaultPath, err := vault.Path()
+
+		// Assert
+		assert.NoError(t, err)
+		assert.Equal(t, "/home/user/Documents/Obsidian Vault", vaultPath)
+	})
 }
