@@ -2,6 +2,7 @@ package obsidian
 
 type CliConfig struct {
 	DefaultVaultName string `json:"default_vault_name"`
+	DefaultOpenType  string `json:"default_open_type,omitempty"`
 }
 
 type ObsidianVaultConfig struct {

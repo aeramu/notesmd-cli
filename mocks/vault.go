@@ -4,6 +4,7 @@ type MockVaultOperator struct {
 	DefaultNameErr error
 	PathError      error
 	Name           string
+	PathValue      string
 }
 
 func (m *MockVaultOperator) DefaultName() (string, error) {
@@ -23,6 +24,9 @@ func (m *MockVaultOperator) SetDefaultName(_ string) error {
 func (m *MockVaultOperator) Path() (string, error) {
 	if m.PathError != nil {
 		return "", m.PathError
+	}
+	if m.PathValue != "" {
+		return m.PathValue, nil
 	}
 	return "path", nil
 }

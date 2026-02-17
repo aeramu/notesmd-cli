@@ -77,13 +77,28 @@ notesmd-cli create "note.md" --open --editor
 notesmd-cli move "old.md" "new.md" --open --editor
 ```
 
-### Set Default Vault
-
-Defines default vault for future usage. If not set, pass `--vault` flag for other commands. You don't provide the path to vault here, just the name.
+To avoid passing `--editor` every time, configure it as the default open type once:
 
 ```bash
-notesmd-cli set-default "{vault-name}"
+notesmd-cli set-default --open-type editor
 ```
+
+### Set Default Vault and Open Type
+
+Defines the default vault and/or open type for future usage. If no default vault is set, pass the `--vault` flag with other commands.
+
+```bash
+# Set default vault (vault name only, not the path)
+notesmd-cli set-default "{vault-name}"
+
+# Set default open type: 'obsidian' (default) or 'editor'
+notesmd-cli set-default --open-type editor
+
+# Set both at once
+notesmd-cli set-default "{vault-name}" --open-type editor
+```
+
+When `default_open_type` is set to `editor`, commands that support `--open` will open notes in `$EDITOR` automatically, without needing to pass `--editor` each time.
 
 Note: `open` and other commands in `notesmd-cli` use this vault's base directory as the working directory, not the current working directory of your terminal.
 
@@ -206,25 +221,25 @@ notesmd-cli print "{note-name}" --vault "{vault-name}"
 
 ### Create / Update Note
 
-Creates note (can also be a path with name) in vault. By default, if the note exists, it will create another note but passing `--overwrite` or `--append` can be used to edit the named note.
+Creates a note (can also be a path with name) directly on disk — **Obsidian does not need to be running**. If the note already exists and neither `--overwrite` nor `--append` is passed, the file is left unchanged. Intermediate directories are created automatically.
 
 ```bash
-# Creates empty note in default obsidian and opens it
+# Creates empty note in default vault
 notesmd-cli create "{note-name}"
 
-# Creates empty note in given obsidian and opens it
-notesmd-cli create "{note-name}"  --vault "{vault-name}"
+# Creates empty note in specified vault
+notesmd-cli create "{note-name}" --vault "{vault-name}"
 
-# Creates note in default obsidian with content
+# Creates note with content
 notesmd-cli create "{note-name}" --content "abcde"
 
-# Creates note in default obsidian with content - overwrite existing note
+# Overwrites an existing note
 notesmd-cli create "{note-name}" --content "abcde" --overwrite
 
-# Creates note in default obsidian with content - append existing note
+# Appends to an existing note
 notesmd-cli create "{note-name}" --content "abcde" --append
 
-# Creates note and opens it
+# Creates note and opens it in Obsidian
 notesmd-cli create "{note-name}" --content "abcde" --open
 
 # Creates note and opens it in your default editor
