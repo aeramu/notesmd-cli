@@ -54,7 +54,7 @@ notesmd-cli --help
 
 ### Editor Flag
 
-The `search`, `search-content`, `create`, and `move` commands support the `--editor` (or `-e`) flag, which opens notes in your default text editor instead of the Obsidian application. This is useful for quick edits or when working in a terminal-only environment.
+The `open`, `search`, `search-content`, `create`, and `move` commands support the `--editor` (or `-e`) flag, which opens notes in your default text editor instead of the Obsidian application. This is useful for quick edits or when working in a terminal-only environment.
 
 The editor is determined by the `EDITOR` environment variable. If not set, it defaults to `vim`.
 
@@ -71,6 +71,7 @@ The editor is determined by the `EDITOR` environment variable. If not set, it de
 export EDITOR="code"  # or "vim", "nano", "subl", etc.
 
 # Use with supported commands
+notesmd-cli open "note.md" --editor
 notesmd-cli search --editor
 notesmd-cli search-content "term" --editor
 notesmd-cli create "note.md" --open --editor
@@ -127,7 +128,7 @@ Then you can use `obs_cd` to navigate to the default vault directory within your
 
 ### Open Note
 
-Open given note name in Obsidian. Note can also be an absolute path from top level of vault.
+Open given note name in Obsidian (or your default editor). Note can also be an absolute path from top level of vault.
 
 ```bash
 # Opens note in obsidian vault
@@ -140,6 +141,9 @@ notesmd-cli open "{note-name}" --vault "{vault-name}"
 notesmd-cli open "{note-name}" --section "{heading-text}"
 
 notesmd-cli open "{note-name}" --vault "{vault-name}" --section "{heading-text}"
+
+# Opens note in your default editor instead of Obsidian
+notesmd-cli open "{note-name}" --editor
 ```
 
 ### Daily Note

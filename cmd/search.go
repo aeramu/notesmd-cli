@@ -22,6 +22,12 @@ var searchCmd = &cobra.Command{
 		if err != nil {
 			log.Fatalf("failed to retrieve 'editor' flag: %v", err)
 		}
+		if !cmd.Flags().Changed("editor") {
+			defaultOpenType, configErr := vault.DefaultOpenType()
+			if configErr == nil && defaultOpenType == "editor" {
+				useEditor = true
+			}
+		}
 		err = actions.SearchNotes(&vault, &note, &uri, &fuzzyFinder, useEditor)
 		if err != nil {
 			log.Fatal(err)

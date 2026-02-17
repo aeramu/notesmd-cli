@@ -24,6 +24,12 @@ var moveCmd = &cobra.Command{
 		if err != nil {
 			log.Fatalf("Failed to parse --editor flag: %v", err)
 		}
+		if !cmd.Flags().Changed("editor") {
+			defaultOpenType, configErr := vault.DefaultOpenType()
+			if configErr == nil && defaultOpenType == "editor" {
+				useEditor = true
+			}
+		}
 		params := actions.MoveParams{
 			CurrentNoteName: currentName,
 			NewNoteName:     newName,
