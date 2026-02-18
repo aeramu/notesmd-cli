@@ -9,6 +9,19 @@ import (
 	"github.com/Yakitrak/notesmd-cli/pkg/obsidian"
 )
 
+// noteName returns the (possibly prefixed) note name based on Obsidian config.
+// If the name already contains a "/" it is treated as an explicit path and
+// returned unchanged. Otherwise, the configured default folder is prepended.
+func applyDefaultFolder(noteName, vaultPath string) string {
+	if strings.Contains(noteName, "/") {
+		return noteName
+	}
+	if folder := obsidian.DefaultNoteFolder(vaultPath); folder != "" {
+		return folder + "/" + noteName
+	}
+	return noteName
+}
+
 type CreateParams struct {
 	NoteName        string
 	ShouldAppend    bool
@@ -29,6 +42,9 @@ func CreateNote(vault obsidian.VaultManager, uri obsidian.UriManager, params Cre
 	if err != nil {
 		return err
 	}
+
+	// Prepend configured default folder when note name has no explicit path.
+	params.NoteName = applyDefaultFolder(params.NoteName, vaultPath)
 
 	// Validate the note path stays within the vault directory.
 	notePath, err := obsidian.ValidatePath(vaultPath, obsidian.AddMdSuffix(params.NoteName))

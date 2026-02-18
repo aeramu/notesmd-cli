@@ -211,6 +211,52 @@ func TestCreateNote(t *testing.T) {
 		assert.Error(t, err)
 	})
 
+	t.Run("Uses default folder from Obsidian config", func(t *testing.T) {
+		// Arrange
+		tmpDir := t.TempDir()
+		obsDir := filepath.Join(tmpDir, ".obsidian")
+		os.MkdirAll(obsDir, 0755)
+		os.WriteFile(filepath.Join(obsDir, "app.json"), []byte(`{
+			"newFileLocation": "folder",
+			"newFileFolderPath": "Inbox"
+		}`), 0644)
+
+		vault := mocks.MockVaultOperator{Name: "myVault", PathValue: tmpDir}
+		uri := mocks.MockUriManager{}
+		// Act
+		err := actions.CreateNote(&vault, &uri, actions.CreateParams{
+			NoteName: "note",
+			Content:  "hello",
+		})
+		// Assert
+		assert.NoError(t, err)
+		assert.FileExists(t, filepath.Join(tmpDir, "Inbox", "note.md"))
+	})
+
+	t.Run("Explicit path ignores default folder config", func(t *testing.T) {
+		// Arrange
+		tmpDir := t.TempDir()
+		obsDir := filepath.Join(tmpDir, ".obsidian")
+		os.MkdirAll(obsDir, 0755)
+		os.WriteFile(filepath.Join(obsDir, "app.json"), []byte(`{
+			"newFileLocation": "folder",
+			"newFileFolderPath": "Inbox"
+		}`), 0644)
+
+		vault := mocks.MockVaultOperator{Name: "myVault", PathValue: tmpDir}
+		uri := mocks.MockUriManager{}
+		// Act
+		err := actions.CreateNote(&vault, &uri, actions.CreateParams{
+			NoteName: "sub/note",
+			Content:  "hello",
+		})
+		// Assert
+		assert.NoError(t, err)
+		assert.FileExists(t, filepath.Join(tmpDir, "sub", "note.md"))
+		// Verify it's NOT in Inbox/sub/
+		assert.NoFileExists(t, filepath.Join(tmpDir, "Inbox", "sub", "note.md"))
+	})
+
 	t.Run("UseEditor without open does not use editor", func(t *testing.T) {
 		// Arrange
 		tmpDir := t.TempDir()

@@ -54,7 +54,7 @@ notesmd-cli --help
 
 ### Editor Flag
 
-The `open`, `search`, `search-content`, `create`, and `move` commands support the `--editor` (or `-e`) flag, which opens notes in your default text editor instead of the Obsidian application. This is useful for quick edits or when working in a terminal-only environment.
+The `open`, `daily`, `search`, `search-content`, `create`, and `move` commands support the `--editor` (or `-e`) flag, which opens notes in your default text editor instead of the Obsidian application. This is useful for quick edits or when working in a terminal-only environment.
 
 The editor is determined by the `EDITOR` environment variable. If not set, it defaults to `vim`.
 
@@ -148,7 +148,7 @@ notesmd-cli open "{note-name}" --editor
 
 ### Daily Note
 
-Open daily note in Obsidian. It will create one (using template) if one does not exist.
+Creates or opens today's daily note directly on disk — **Obsidian does not need to be running**. If `.obsidian/daily-notes.json` exists in the vault, the CLI reads `folder`, `format` (Moment.js date format, default `YYYY-MM-DD`), and `template` from it. A template file's content is used when creating a new daily note. If the config is missing or unreadable, defaults are used (vault root, `YYYY-MM-DD`, no template).
 
 ```bash
 # Creates / opens daily note in obsidian vault
@@ -157,6 +157,8 @@ notesmd-cli daily
 # Creates / opens daily note in specified obsidian vault
 notesmd-cli daily --vault "{vault-name}"
 
+# Creates / opens daily note in your default editor
+notesmd-cli daily --editor
 ```
 
 ### Search Note
@@ -226,6 +228,8 @@ notesmd-cli print "{note-name}" --vault "{vault-name}"
 ### Create / Update Note
 
 Creates a note (can also be a path with name) directly on disk — **Obsidian does not need to be running**. If the note already exists and neither `--overwrite` nor `--append` is passed, the file is left unchanged. Intermediate directories are created automatically.
+
+When the note name has no explicit path (no `/`), the CLI reads `.obsidian/app.json` from the vault to check for a configured default folder (`newFileLocation: "folder"` and `newFileFolderPath`). If configured, the note is placed in that folder. If the config is missing or unreadable, the note is created at the vault root.
 
 ```bash
 # Creates empty note in default vault
