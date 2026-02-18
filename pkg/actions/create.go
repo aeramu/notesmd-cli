@@ -77,9 +77,11 @@ func WriteNoteFile(notePath, content string, shouldAppend, shouldOverwrite bool)
 		if err != nil {
 			return fmt.Errorf("failed to open note for appending: %w", err)
 		}
-		defer f.Close()
-		_, err = f.WriteString(content)
-		return err
+		if _, err = f.WriteString(content); err != nil {
+			f.Close()
+			return err
+		}
+		return f.Close()
 	}
 
 	if fileExists && !shouldOverwrite {
