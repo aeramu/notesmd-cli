@@ -56,7 +56,7 @@ notesmd-cli --help
 
 The `open`, `daily`, `search`, `search-content`, `create`, and `move` commands support the `--editor` (or `-e`) flag, which opens notes in your default text editor instead of the Obsidian application. This is useful for quick edits or when working in a terminal-only environment.
 
-The editor is determined by the `EDITOR` environment variable. If not set, it defaults to `vim`.
+The editor is determined by the `EDITOR` environment variable (e.g., `"vim"`, `"code"`, or `"code -w"`). If not set, it defaults to `vim`.
 
 **Supported editors:**
 
@@ -72,6 +72,7 @@ export EDITOR="code"  # or "vim", "nano", "subl", etc.
 
 # Use with supported commands
 notesmd-cli open "note.md" --editor
+notesmd-cli daily --editor
 notesmd-cli search --editor
 notesmd-cli search-content "term" --editor
 notesmd-cli create "note.md" --open --editor
