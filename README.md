@@ -62,6 +62,29 @@ go build -o notesmd-cli .
 sudo install -m 755 notesmd-cli /usr/local/bin/
 ```
 
+### Headless / No Obsidian Installed 
+
+If you're running on a headless server or don't have Obsidian installed (e.g., server environments, containers, or systems without a GUI), you can still use this CLI. Obsidian requires a GUI, so this section explains how to set up the required configuration manually.
+
+**Setup Instructions:**
+
+1. Create the Obsidian config directory:
+   ```bash
+   mkdir -p ~/.config/obsidian
+   ```
+
+2. Create `obsidian.json` with your vault configuration:
+   ```json
+   {
+     "vaults": {
+       "your-vault-name": {
+         "path": "/path/to/your/vault"
+       }
+     }
+   }
+   ```
+   Replace `your-vault-name` with whatever name you want to use. For the path, use the **absolute path** — do not use `~` as the CLI does not expand it to your home directory.
+
 ---
 
 ## Migrating from Obsidian CLI
